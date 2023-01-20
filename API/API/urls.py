@@ -15,9 +15,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from isup.views import HomingPageView 
+from isup.views import HomingPageView
+from rest_framework import routers
+from isup.views import DomainViewSet
+from django.urls import include
 
+router = routers.DefaultRouter()
+router.register(r'domains', DomainViewSet)
 
 urlpatterns = [
     path('', HomingPageView.as_view(), name='homePage'),
+    path('api/', include((router.urls))),
+    path("api/auth", include("rest_framework.urls", namespace="rest_framework")),
+
 ]
+
+
+# GET /api/domains/  # Lister tous les domaines connus et leurs état (avec de la pagination si nécessaire).
+# POST /api/domains/ -d '{"domain": "mdk.fr"}'  # Pour ajouter un nom de domaine (qui appartient à celui qui fait le POST).
+# GET /api/domains/1/  # Afficher les informations du premier domaine.
+# PUT /api/domains/1/  # Modifier le domaine 1, seulement autorisé si j'en suis propriétaire.
+# DELETE /api/domains/1/  # Supprimer le domaine 1, seulement autorisé si j'en suis propriétaire.
+# GET /api/checks/  # Lister toutes les vérifications qui ont été effectuées.
+# GET /api/checks/?domain=1  # Lister toutes les vérifications effectuées pour le domaine 1.
+# GET /api/checks/1  # Afficher le check d'id 1.
